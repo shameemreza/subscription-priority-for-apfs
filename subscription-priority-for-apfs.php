@@ -3,7 +3,7 @@
  * Plugin Name: Subscription Priority for All Products for WooCommerce Subscriptions
  * Plugin URI: https://github.com/shameemreza/subscription-priority-for-apfs
  * Description: Makes subscription plans the default selection and visually prioritizes them over one-time purchases in All Products for WooCommerce Subscriptions.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Shameem Reza
  * Author URI: https://shameem.me
  * License: GPL-2.0-or-later
@@ -151,6 +151,7 @@ final class Subscription_Priority_APFS {
 		
 		// Customize add-to-cart button text for subscriptions.
 		add_filter( 'wcsatt_add_to_cart_text', array( $this, 'subscription_button_text' ), 10, 2 );
+		add_filter( 'woocommerce_product_add_to_cart_text', array( $this, 'subscription_button_text' ), 10, 2 );
 		
 		// Enable AJAX add-to-cart for subscription products.
 		add_filter( 'wcsatt_product_supports_ajax_add_to_cart', '__return_true', 100 );
@@ -221,10 +222,23 @@ final class Subscription_Priority_APFS {
 		}
 
 		// Check context - catalog pages or AJAX.
-		$is_catalog = is_shop() || is_product_category() || is_product_tag();
-		$is_ajax = wp_doing_ajax() && ! empty( $_REQUEST['add-to-cart'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		// When clicking "Sign up" from shop pages, it's always via AJAX
+		$is_ajax_add = wp_doing_ajax() && ! empty( $_REQUEST['add-to-cart'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$is_catalog = is_shop() || is_product_category() || is_product_tag() || is_product_taxonomy();
+		
+		// Check if request is coming from a shop/archive page via AJAX
+		$referer = wp_get_referer();
+		$is_from_catalog = false;
+		if ( $referer ) {
+			$shop_page_id = wc_get_page_id( 'shop' );
+			$is_from_catalog = ( $shop_page_id && strpos( $referer, get_permalink( $shop_page_id ) ) !== false ) ||
+							   strpos( $referer, '/product-category/' ) !== false ||
+							   strpos( $referer, '/product-tag/' ) !== false ||
+							   strpos( $referer, '/shop/' ) !== false;
+		}
 
-		if ( ! apply_filters( 'spapfs_apply_subscription_scheme', ( $is_catalog || $is_ajax ), $product_id ) ) {
+		// Apply subscription if from catalog, AJAX add-to-cart, or referred from catalog
+		if ( ! apply_filters( 'spapfs_apply_subscription_scheme', ( $is_catalog || $is_ajax_add || $is_from_catalog ), $product_id ) ) {
 			return $cart_item_data;
 		}
 
@@ -251,9 +265,14 @@ final class Subscription_Priority_APFS {
 			return $cart_item_data;
 		}
 
-		// Find first subscription scheme.
+		// Find first subscription scheme (not one-time purchase).
 		foreach ( $schemes as $scheme ) {
 			if ( $scheme && is_object( $scheme ) && method_exists( $scheme, 'get_key' ) ) {
+				// Skip one-time purchase options
+				if ( method_exists( $scheme, 'is_one_time' ) && $scheme->is_one_time() ) {
+					continue;
+				}
+				
 				$cart_item_data['wcsatt_data'] = array(
 					'active_subscription_scheme' => $scheme->get_key(),
 				);
@@ -282,7 +301,7 @@ final class Subscription_Priority_APFS {
 		}
 
 		if ( \WCS_ATT_Product_Schemes::has_subscription_schemes( $product ) ) {
-			$text = apply_filters( 'spapfs_subscribe_button_text', __( 'Subscribe', 'subscription-priority-apfs' ), $product );
+			$text = apply_filters( 'spapfs_subscribe_button_text', __( 'Sign up', 'subscription-priority-apfs' ), $product );
 		}
 
 		return $text;

@@ -16,7 +16,7 @@ This plugin solves a common request from WooCommerce store owners who want to:
 - **Automatic Default Selection** - Subscription plans are pre-selected on product pages.
 - **Direct Subscribe from Shop** - Adds subscription version directly to cart.
 - **Visual Hierarchy** - Bold and highlighted subscription options.
-- **Custom Button Text** - "Subscribe" instead of "Add to Cart".
+- **Custom Button Text** - "Sign up" instead of "Add to Cart".
 - **AJAX Support** - Full compatibility with AJAX add-to-cart.
 - **HPOS Compatible** - Works with High-Performance Order Storage.
 - **Developer Friendly** - Extensible with hooks and filters.
@@ -50,7 +50,7 @@ add_filter( 'spapfs_enable_default_subscription', function( $enable, $product ) 
     return $enable;
 }, 10, 2 );
 
-// Customize the Subscribe button text
+// Customize the Sign up button text
 add_filter( 'spapfs_subscribe_button_text', function( $text, $product ) {
     return __( 'Start Subscription', 'your-textdomain' );
 }, 10, 2 );
@@ -82,6 +82,13 @@ Override the default blue (#0073aa) highlighting:
 ```
 
 ## Changelog
+
+### Version 1.0.1 (2024-11-28)
+
+- Fixed: Shop page button now correctly shows "Sign up" instead of "Add to cart"
+- Fixed: "Sign up" button on shop pages now adds subscription version (not one-time purchase)
+- Improved: Better detection of AJAX add-to-cart requests from shop pages
+- Changed: Button text from "Subscribe" to "Sign up" (matches WooCommerce Subscriptions default)
 
 ### Version 1.0.0 (2024-11-28)
 
