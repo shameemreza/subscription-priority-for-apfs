@@ -1,0 +1,25 @@
+# IDE
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+
+# Build files
+*.zip
+*.tar.gz
+
+# WordPress
+*.log
+wp-config.php
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# Environment files
+.env
+.env.local
