@@ -11,10 +11,10 @@
  * Text Domain: subscription-priority-apfs
  * Domain Path: /languages
  * Requires at least: 6.0
- * Tested up to: 6.7
+ * Tested up to: 6.8
  * Requires PHP: 7.4
- * WC requires at least: 7.0
- * WC tested up to: 9.3
+ * WC requires at least: 8.0
+ * WC tested up to: 10.1.2
  * Requires Plugins: woocommerce, woocommerce-subscriptions, woocommerce-all-products-for-subscriptions
  *
  * @package SubscriptionPriorityAPFS
