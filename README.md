@@ -83,6 +83,13 @@ Override the default blue (#0073aa) highlighting:
 
 ## Changelog
 
+### Version 1.0.2 (2024-11-28)
+
+- Fixed: Created missing `languages` folder for translations
+- Fixed: Removed deprecated `load_plugin_textdomain()` function (not needed since WordPress 4.6)
+- Fixed: Corrected text domain throughout plugin to match plugin slug
+- Improved: Code compliance with WordPress Plugin Check standards
+
 ### Version 1.0.1 (2024-11-28)
 
 - Fixed: Shop page button now correctly shows "Sign up" instead of "Add to cart"

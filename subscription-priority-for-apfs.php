@@ -3,12 +3,12 @@
  * Plugin Name: Subscription Priority for All Products for WooCommerce Subscriptions
  * Plugin URI: https://github.com/shameemreza/subscription-priority-for-apfs
  * Description: Makes subscription plans the default selection and visually prioritizes them over one-time purchases in All Products for WooCommerce Subscriptions.
- * Version: 1.0.1
+ * Version: 1.0.2
  * Author: Shameem Reza
  * Author URI: https://shameem.me
  * License: GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: subscription-priority-apfs
+ * Text Domain: subscription-priority-for-apfs
  * Domain Path: /languages
  * Requires at least: 6.0
  * Tested up to: 6.8
@@ -71,6 +71,8 @@ final class Subscription_Priority_APFS {
 	 * @since 1.0.0
 	 */
 	private function __construct() {
+		// Note: load_plugin_textdomain() is not needed since WordPress 4.6.
+		// WordPress automatically loads translations based on the Text Domain header.
 		$this->init_hooks();
 	}
 
@@ -88,9 +90,6 @@ final class Subscription_Priority_APFS {
 		
 		// Add plugin action links.
 		add_filter( 'plugin_action_links_' . SPAPFS_PLUGIN_BASENAME, array( $this, 'add_action_links' ) );
-		
-		// Load text domain.
-		add_action( 'init', array( $this, 'load_textdomain' ) );
 	}
 
 	/**
@@ -301,7 +300,7 @@ final class Subscription_Priority_APFS {
 		}
 
 		if ( \WCS_ATT_Product_Schemes::has_subscription_schemes( $product ) ) {
-			$text = apply_filters( 'spapfs_subscribe_button_text', __( 'Sign up', 'subscription-priority-apfs' ), $product );
+			$text = apply_filters( 'spapfs_subscribe_button_text', __( 'Sign up', 'subscription-priority-for-apfs' ), $product );
 		}
 
 		return $text;
@@ -428,19 +427,6 @@ final class Subscription_Priority_APFS {
 	}
 
 	/**
-	 * Load plugin text domain.
-	 *
-	 * @since 1.0.0
-	 */
-	public function load_textdomain() {
-		load_plugin_textdomain(
-			'subscription-priority-apfs',
-			false,
-			dirname( SPAPFS_PLUGIN_BASENAME ) . '/languages'
-		);
-	}
-
-	/**
 	 * Add plugin action links.
 	 *
 	 * @since  1.0.0
@@ -449,7 +435,7 @@ final class Subscription_Priority_APFS {
 	 */
 	public function add_action_links( $links ) {
 		$plugin_links = array(
-			'<a href="https://github.com/shameemreza/subscription-priority-for-apfs" target="_blank">' . esc_html__( 'Documentation', 'subscription-priority-apfs' ) . '</a>',
+			'<a href="https://github.com/shameemreza/subscription-priority-for-apfs" target="_blank">' . esc_html__( 'Documentation', 'subscription-priority-for-apfs' ) . '</a>',
 		);
 
 		return array_merge( $plugin_links, $links );
@@ -468,13 +454,13 @@ final class Subscription_Priority_APFS {
 		?>
 		<div class="notice notice-error">
 			<p>
-				<strong><?php esc_html_e( 'Subscription Priority for All Products for WooCommerce Subscriptions', 'subscription-priority-apfs' ); ?></strong>
-				<?php esc_html_e( 'requires the following plugins to be active:', 'subscription-priority-apfs' ); ?>
+				<strong><?php esc_html_e( 'Subscription Priority for All Products for WooCommerce Subscriptions', 'subscription-priority-for-apfs' ); ?></strong>
+				<?php esc_html_e( 'requires the following plugins to be active:', 'subscription-priority-for-apfs' ); ?>
 			</p>
 			<ul style="list-style: disc; margin-left: 20px;">
-				<li><?php esc_html_e( 'WooCommerce', 'subscription-priority-apfs' ); ?></li>
-				<li><?php esc_html_e( 'WooCommerce Subscriptions', 'subscription-priority-apfs' ); ?></li>
-				<li><?php esc_html_e( 'All Products for WooCommerce Subscriptions', 'subscription-priority-apfs' ); ?></li>
+				<li><?php esc_html_e( 'WooCommerce', 'subscription-priority-for-apfs' ); ?></li>
+				<li><?php esc_html_e( 'WooCommerce Subscriptions', 'subscription-priority-for-apfs' ); ?></li>
+				<li><?php esc_html_e( 'All Products for WooCommerce Subscriptions', 'subscription-priority-for-apfs' ); ?></li>
 			</ul>
 		</div>
 		<?php
@@ -504,10 +490,10 @@ final class Subscription_Priority_APFS {
 		?>
 		<div class="notice notice-success is-dismissible">
 			<p>
-				<strong><?php esc_html_e( 'Subscription Priority for APFS activated successfully!', 'subscription-priority-apfs' ); ?></strong>
+				<strong><?php esc_html_e( 'Subscription Priority for APFS activated successfully!', 'subscription-priority-for-apfs' ); ?></strong>
 			</p>
 			<p>
-				<?php esc_html_e( 'Subscription plans will now be selected by default on all products with subscription options.', 'subscription-priority-apfs' ); ?>
+				<?php esc_html_e( 'Subscription plans will now be selected by default on all products with subscription options.', 'subscription-priority-for-apfs' ); ?>
 			</p>
 		</div>
 		<?php
