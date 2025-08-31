@@ -14,7 +14,8 @@ This plugin solves a common request from WooCommerce store owners who want to:
 ## Features
 
 - **Automatic Default Selection** - Subscription plans are pre-selected on product pages.
-- **Direct Subscribe from Shop** - Adds subscription version directly to cart.
+- **Universal Coverage** - Works on all pages: shop, homepage, shortcodes, widgets, blocks.
+- **Direct Subscribe Anywhere** - Adds subscription version directly to cart from any location.
 - **Visual Hierarchy** - Bold and highlighted subscription options.
 - **Custom Button Text** - "Sign up" instead of "Add to Cart".
 - **AJAX Support** - Full compatibility with AJAX add-to-cart.
@@ -82,6 +83,13 @@ Override the default blue (#0073aa) highlighting:
 ```
 
 ## Changelog
+
+### Version 1.0.3 (2024-11-28)
+
+- Fixed: "Sign up" button now works everywhere products are displayed (homepage, shortcodes, widgets, blocks)
+- Fixed: Subscription auto-selection now works on all pages, not just shop/category pages
+- Improved: Styles now load on all pages that might contain products
+- Enhanced: Better context detection for applying subscription schemes
 
 ### Version 1.0.2 (2024-11-28)
 

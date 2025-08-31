@@ -3,7 +3,7 @@
  * Plugin Name: Subscription Priority for All Products for WooCommerce Subscriptions
  * Plugin URI: https://github.com/shameemreza/subscription-priority-for-apfs
  * Description: Makes subscription plans the default selection and visually prioritizes them over one-time purchases in All Products for WooCommerce Subscriptions.
- * Version: 1.0.2
+ * Version: 1.0.3
  * Author: Shameem Reza
  * Author URI: https://shameem.me
  * License: GPL-2.0-or-later
@@ -29,7 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define plugin constants.
-define( 'SPAPFS_VERSION', '1.0.0' );
+define( 'SPAPFS_VERSION', '1.0.3' );
 define( 'SPAPFS_PLUGIN_FILE', __FILE__ );
 define( 'SPAPFS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SPAPFS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -206,7 +206,7 @@ final class Subscription_Priority_APFS {
 	}
 
 	/**
-	 * Apply subscription scheme to cart items from catalog pages.
+	 * Apply subscription scheme to cart items from any page.
 	 *
 	 * @since  1.0.0
 	 * @param  array $cart_item_data Cart item data.
@@ -220,24 +220,25 @@ final class Subscription_Priority_APFS {
 			return $cart_item_data;
 		}
 
-		// Check context - catalog pages or AJAX.
-		// When clicking "Sign up" from shop pages, it's always via AJAX
-		$is_ajax_add = wp_doing_ajax() && ! empty( $_REQUEST['add-to-cart'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$is_catalog = is_shop() || is_product_category() || is_product_tag() || is_product_taxonomy();
-		
-		// Check if request is coming from a shop/archive page via AJAX
-		$referer = wp_get_referer();
-		$is_from_catalog = false;
-		if ( $referer ) {
-			$shop_page_id = wc_get_page_id( 'shop' );
-			$is_from_catalog = ( $shop_page_id && strpos( $referer, get_permalink( $shop_page_id ) ) !== false ) ||
-							   strpos( $referer, '/product-category/' ) !== false ||
-							   strpos( $referer, '/product-tag/' ) !== false ||
-							   strpos( $referer, '/shop/' ) !== false;
+		// Skip if we're on a single product page (user can choose manually)
+		if ( is_product() && ! wp_doing_ajax() ) {
+			return $cart_item_data;
 		}
 
-		// Apply subscription if from catalog, AJAX add-to-cart, or referred from catalog
-		if ( ! apply_filters( 'spapfs_apply_subscription_scheme', ( $is_catalog || $is_ajax_add || $is_from_catalog ), $product_id ) ) {
+		// For all other contexts (shop, category, homepage, shortcodes, widgets, AJAX)
+		// We want to apply subscription by default when add-to-cart is triggered
+		$apply_subscription = true;
+		
+		// Check if it's an AJAX add-to-cart request
+		$is_ajax_add = wp_doing_ajax() && ! empty( $_REQUEST['add-to-cart'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		
+		// Only skip if we're on a single product page AND it's not an AJAX request from elsewhere
+		if ( is_product() && ! $is_ajax_add ) {
+			$apply_subscription = false;
+		}
+
+		// Allow customization via filter
+		if ( ! apply_filters( 'spapfs_apply_subscription_scheme', $apply_subscription, $product_id ) ) {
 			return $cart_item_data;
 		}
 
@@ -291,7 +292,8 @@ final class Subscription_Priority_APFS {
 	 * @return string Modified button text.
 	 */
 	public function subscription_button_text( $text, $product ) {
-		if ( ! ( is_shop() || is_product_category() || is_product_tag() ) ) {
+		// Don't change text on single product pages (handled by APFS)
+		if ( is_product() ) {
 			return $text;
 		}
 
@@ -408,7 +410,24 @@ final class Subscription_Priority_APFS {
 	 * @return bool True if styles should load.
 	 */
 	private function should_load_styles() {
-		return is_product() || is_shop() || is_product_category() || is_product_tag() || is_cart();
+		// Load on specific WooCommerce pages
+		if ( is_product() || is_shop() || is_product_category() || is_product_tag() || is_cart() ) {
+			return true;
+		}
+		
+		// Load on homepage
+		if ( is_front_page() || is_home() ) {
+			return true;
+		}
+		
+		// Load on any page that might have product shortcodes or blocks
+		// Check if WooCommerce shortcodes or blocks might be present
+		if ( is_page() || is_single() ) {
+			return true;
+		}
+		
+		// Allow customization via filter
+		return apply_filters( 'spapfs_should_load_styles', true );
 	}
 
 	/**
